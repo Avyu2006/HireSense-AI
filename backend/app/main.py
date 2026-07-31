@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.database.database import Base, engine
 from app.models import user, resume
@@ -10,6 +11,17 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="HireSense AI API",
     version="1.0.0"
+)
+
+# Enable CORS for React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(user_routes.router)
