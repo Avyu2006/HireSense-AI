@@ -3,41 +3,33 @@ import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../services/api";
 
-function Login() {
+function Register() {
   const navigate = useNavigate();
 
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const loginUser = async () => {
-    if (!email || !password) {
-      toast.error("Please enter email and password.");
+  const registerUser = async () => {
+    if (!fullName || !email || !password) {
+      toast.error("Please fill all fields.");
       return;
     }
 
     try {
       setLoading(true);
 
-      const response = await api.post(
-        "/users/login",
-        new URLSearchParams({
-          username: email,
-          password: password,
-        }),
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
+      await api.post("/users/register", {
+        full_name: fullName,
+        email: email,
+        password: password,
+      });
 
-      localStorage.setItem("token", response.data.access_token);
-
-      toast.success("Login Successful!");
+      toast.success("Registration Successful!");
 
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/");
       }, 500);
 
     } catch (error) {
@@ -45,7 +37,7 @@ function Login() {
 
       toast.error(
         error.response?.data?.detail ||
-        "Invalid email or password."
+        "Registration failed."
       );
     } finally {
       setLoading(false);
@@ -56,7 +48,16 @@ function Login() {
     <div style={{ padding: "40px" }}>
       <h1>HireSense AI</h1>
 
-      <h2>Login</h2>
+      <h2>Register</h2>
+
+      <input
+        type="text"
+        placeholder="Full Name"
+        value={fullName}
+        onChange={(e) => setFullName(e.target.value)}
+      />
+
+      <br /><br />
 
       <input
         type="email"
@@ -77,19 +78,19 @@ function Login() {
       <br /><br />
 
       <button
-        onClick={loginUser}
+        onClick={registerUser}
         disabled={loading}
       >
-        {loading ? "Logging in..." : "Login"}
+        {loading ? "Registering..." : "Register"}
       </button>
 
       <br /><br />
 
-      <Link to="/register">
-        Don't have an account? Register
+      <Link to="/">
+        Already have an account? Login
       </Link>
     </div>
   );
 }
 
-export default Login;
+export default Register;

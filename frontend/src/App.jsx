@@ -1,10 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ResumeUpload from "./pages/ResumeUpload";
+import ATSAnalyzer from "./pages/ATSAnalyzer";
 import JobMatcher from "./pages/JobMatcher";
 import Interview from "./pages/Interview";
+import Profile from "./pages/Profile";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -20,10 +23,15 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Login */}
+
+        {/* Public */}
+
         <Route path="/" element={<Login />} />
 
-        {/* Dashboard */}
+        <Route path="/register" element={<Register />} />
+
+        {/* Protected */}
+
         <Route
           path="/dashboard"
           element={
@@ -33,7 +41,6 @@ function App() {
           }
         />
 
-        {/* Resume Upload */}
         <Route
           path="/upload"
           element={
@@ -43,7 +50,15 @@ function App() {
           }
         />
 
-        {/* Job Matcher */}
+        <Route
+          path="/ats"
+          element={
+            <ProtectedRoute>
+              <ATSAnalyzer />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/job-match"
           element={
@@ -53,7 +68,6 @@ function App() {
           }
         />
 
-        {/* AI Interview */}
         <Route
           path="/interview"
           element={
@@ -63,8 +77,20 @@ function App() {
           }
         />
 
-        {/* Redirect unknown routes */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="*"
+          element={<Navigate to="/dashboard" replace />}
+        />
+
       </Routes>
     </BrowserRouter>
   );

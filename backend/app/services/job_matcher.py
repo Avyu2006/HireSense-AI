@@ -1,60 +1,73 @@
-import json
 import re
-from pathlib import Path
 
-from app.services.category_detector import detect_category
+COMMON_SKILLS = [
+    "Python",
+    "SQL",
+    "FastAPI",
+    "Machine Learning",
+    "Deep Learning",
+    "Data Analysis",
+    "Pandas",
+    "NumPy",
+    "Git",
+    "Docker",
+    "REST API",
+    "JavaScript",
+    "React",
+    "HTML",
+    "CSS",
+    "Node.js",
+    "MongoDB",
+    "AWS",
+    "Linux",
+    "TensorFlow",
+]
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
+def extract_skills(text):
+    text = text.lower()
 
-def load_skills(category):
+    skills = []
 
-    file = DATA_DIR / f"{category}.json"
+    for skill in COMMON_SKILLS:
+        if skill.lower() in text:
+            skills.append(skill)
 
-    with open(file, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
-def contains_skill(text, skill):
-
-    pattern = r"\b" + re.escape(skill.lower()) + r"\b"
-
-    return re.search(pattern, text.lower()) is not None
+    return skills
 
 
 def match_resume_with_job(resume_text, job_description):
+    resume_skills = extract_skills(resume_text)
+    job_skills = extract_skills(job_description)
 
-    category = detect_category(job_description)
+    matched = list(set(resume_skills) & set(job_skills))
+    missing = list(set(job_skills) - set(resume_skills))
 
-    skills = load_skills(category)
+    if len(job_skills) == 0:
+        score = 0
+    else:
+        score = int((len(matched) / len(job_skills)) * 100)
 
-    matched = []
+    if score >= 85:
+        level = "Excellent Match"
+    elif score >= 70:
+        level = "Good Match"
+    elif score >= 50:
+        level = "Average Match"
+    else:
+        level = "Low Match"
 
-    missing = []
+    suggestions = []
 
-    for skill in skills:
-
-        if contains_skill(job_description, skill):
-
-            if contains_skill(resume_text, skill):
-                matched.append(skill)
-            else:
-                missing.append(skill)
-
-    total = len(matched) + len(missing)
-
-    score = 0
-
-    if total > 0:
-        score = round(len(matched) / total * 100)
+    for skill in missing:
+        suggestions.append(f"Add {skill} to your resume.")
 
     return {
-        "category": category,
         "match_score": score,
-        "matched_skills": matched,
-        "missing_skills": missing,
-        "suggestions": [
-            f"Learn or add {skill}"
-            for skill in missing
-        ]
+        "match_level": level,
+        "matched_skills": sorted(matched),
+        "missing_skills": sorted(missing),
+        "resume_skills": sorted(resume_skills),
+        "job_skills": sorted(job_skills),
+        "suggestions": suggestions,
     }

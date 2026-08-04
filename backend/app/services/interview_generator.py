@@ -1,43 +1,83 @@
+import re
+
+
 def generate_questions(resume_text: str):
     text = resume_text.lower()
 
     questions = []
 
-    # General HR Questions
-    questions.append("Tell me about yourself.")
-    questions.append("Why do you want to work for our company?")
-    questions.append("What are your strengths and weaknesses?")
-
-    # Skill-based Questions
     if "python" in text:
-        questions.append("Explain Python decorators.")
-        questions.append("What are Python generators?")
-
-    if "machine learning" in text:
-        questions.append("Explain supervised and unsupervised learning.")
-        questions.append("What is overfitting and how can you prevent it?")
-
-    if "sql" in text:
-        questions.append("Explain JOIN types in SQL.")
-        questions.append("What is normalization?")
+        questions.extend([
+            "Explain Python decorators.",
+            "What is the difference between a list and a tuple?",
+            "How does Python memory management work?",
+            "What are generators in Python?",
+        ])
 
     if "fastapi" in text:
-        questions.append("How does dependency injection work in FastAPI?")
+        questions.extend([
+            "Why did you choose FastAPI for your project?",
+            "What is dependency injection in FastAPI?",
+            "How do you secure FastAPI APIs using JWT?",
+        ])
+
+    if "sql" in text:
+        questions.extend([
+            "Explain INNER JOIN and LEFT JOIN.",
+            "What are indexes in SQL?",
+            "What is normalization?",
+        ])
+
+    if "machine learning" in text:
+        questions.extend([
+            "Explain supervised and unsupervised learning.",
+            "What is overfitting?",
+            "How do you evaluate an ML model?",
+            "Explain the bias-variance tradeoff.",
+        ])
+
+    if "deep learning" in text:
+        questions.extend([
+            "What is backpropagation?",
+            "What is the difference between CNN and RNN?",
+            "Why do we use activation functions?",
+        ])
 
     if "docker" in text:
-        questions.append("Why is Docker useful in deployment?")
+        questions.extend([
+            "What is Docker?",
+            "Explain Docker images and containers.",
+            "What is Docker Compose?",
+        ])
 
     if "git" in text:
-        questions.append("Explain Git branching and merging.")
+        questions.extend([
+            "Explain git rebase and git merge.",
+            "What is the difference between fork and clone?",
+        ])
 
     if "react" in text:
-        questions.append("What are React Hooks?")
-        questions.append("Explain the Virtual DOM.")
+        questions.extend([
+            "Explain React Hooks.",
+            "What is Virtual DOM?",
+            "Difference between useEffect and useState?",
+        ])
 
-    if "data analysis" in text:
-        questions.append("How do you handle missing values in a dataset?")
+    questions.extend([
+        "Tell me about yourself.",
+        "Describe your final year project.",
+        "What challenges did you face while building HireSense AI?",
+        "Why should we hire you?",
+        "Where do you see yourself in five years?",
+    ])
+
+    unique_questions = []
+
+    for question in questions:
+        if question not in unique_questions:
+            unique_questions.append(question)
 
     return {
-        "total_questions": len(questions),
-        "questions": questions
+        "total_questions": len(unique_questions),
+        "questions": unique_questions,
     }
